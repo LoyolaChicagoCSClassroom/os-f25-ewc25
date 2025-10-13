@@ -100,9 +100,7 @@ static int kputc(int c) {
     return c;
 }
 void main(void) {
-    for (int i = 0; i < 5; i++) {
-        esp_printf(kputc, "Ethan\n", i);
-    }
+     esp_printf(kputc, "Ethan\n");
     while (1) {
         uint8_t status = inb(0x64);
 
