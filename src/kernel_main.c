@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include "rprintf.h"
 
+
 #define MULTIBOOT2_HEADER_MAGIC         0xe85250d6
 
 const unsigned int multiboot_header[]  __attribute__((section(".multiboot"))) = { MULTIBOOT2_HEADER_MAGIC, 0, 16, -(16 + MULTIBOOT2_HEADER_MAGIC), 0, 12 };
@@ -100,7 +101,7 @@ static int kputc(int c) {
     return c;
 }
 void main(void) {
-     esp_printf(kputc, "Ethan\n");
+     esp_printf(kputc, "Ethan\n"); 
     while (1) {
         uint8_t status = inb(0x64);
 
