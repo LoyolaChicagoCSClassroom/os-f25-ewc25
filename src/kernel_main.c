@@ -101,7 +101,7 @@ static int kputc(int c) {
     return c;
 }
 void main(void) {
-     esp_printf(kputc, "Ethan\n"); 
+     esp_printf(kputc, "Hello Ethan\n"); 
     while (1) {
         uint8_t status = inb(0x64);
 
