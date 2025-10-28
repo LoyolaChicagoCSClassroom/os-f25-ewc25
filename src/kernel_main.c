@@ -132,13 +132,14 @@ void main(void) {
      loadPageDirectory(kernel_page_directory);
      enablePaging();
 
-    uint32_t cr0_val, cr3_val;
-    asm volatile("mov %%cr0, %0" : "=r"(cr0_val));
-    asm volatile("mov %%cr3, %0" : "=r"(cr3_val));
-    esp_printf(kputc, "CR0 = 0x%x CR3 = 0x%x\n", cr0_val, cr3_val);
+     uint32_t cr0_val, cr3_val;
+     asm volatile("mov %%cr0, %0" : "=r"(cr0_val));
+     asm volatile("mov %%cr3, %0" : "=r"(cr3_val));
+     esp_printf(kputc, "CR0 = 0x%x CR3 = 0x%x\n", cr0_val, cr3_val);
 
-    esp_printf(kputc, "paging enabled yippie\n");
-    esp_printf(kputc, "you can type now \n");
+     esp_printf(kputc, "paging enabled yippie\n");
+     esp_printf(kputc, "you can type now \n");
+    
     
     while (1) {
         uint8_t status = inb(0x64);
