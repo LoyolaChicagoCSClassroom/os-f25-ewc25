@@ -1,7 +1,7 @@
-
 #include <stdint.h>
 #include "rprintf.h"
-
+#include "page.h"
+#include "mmu.h"
 
 #define MULTIBOOT2_HEADER_MAGIC         0xe85250d6
 
@@ -100,8 +100,46 @@ static int kputc(int c) {
     print_char((char)c);
     return c;
 }
+extern uint32_t _end_kernel;
+
+static void identify_map_range(uint32_t start, uint32_t end_exclusive) {
+	struct ppage tmp;
+	tmp.next = NULL;
+	tmp.prev = NULL;
+
+	uint32_t v = start & PAGE_MASK;
+	uint32_t end = (end_exclusive + (PAGE_SIZE - 1)) & PAGE_MASK;
+
+	for(; v < end; v += PAGE_SIZE) {
+	   tmp.physical_addr = (void *)v;
+	   map_pages((void *)v, &tmp, kernel_page_directory);
+       }
+   }
+
+
 void main(void) {
-     esp_printf(kputc, "Hello Ethan\n"); 
+     esp_printf(kputc, "Hello Ethan\n");
+     esp_printf(kputc, "WOAH page frame allocator\n");
+     init_pfa_list();
+    
+     identify_map_range(0x00100000u, (uint32_t)&_end_kernel);    
+     identify_map_range(0x000B8000u, 0x000b8000u + PAGE_SIZE);
+
+     uint32_t esp;
+     asm volatile("mov %%esp, %0" : "=r"(esp));
+     identify_map_range((uint32_t)PAGE_ALIGN_DOWN(esp), (uint32_t)PAGE_ALIGN_DOWN(esp) + 2 * PAGE_SIZE);
+
+     loadPageDirectory(kernel_page_directory);
+     enablePaging();
+
+    uint32_t cr0_val, cr3_val;
+    asm volatile("mov %%cr0, %0" : "=r"(cr0_val));
+    asm volatile("mov %%cr3, %0" : "=r"(cr3_val));
+    esp_printf(kputc, "CR0 = 0x%x CR3 = 0x%x\n", cr0_val, cr3_val);
+
+    esp_printf(kputc, "paging enabled yippie\n");
+    esp_printf(kputc, "you can type now \n");
+    
     while (1) {
         uint8_t status = inb(0x64);
 
